@@ -1,0 +1,31 @@
+trigger:
+  branches:
+    include:
+      - master
+      - development
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '14.x'
+    displayName: 'Install Node.js'
+
+- script: |
+    npm install -g allure-commandline
+    allure --version
+  displayName: 'Install Allure CLI'
+
+- script: |
+    npx create-allure-example
+  displayName: 'Create Sample Allure Application'
+
+- script: |
+    cd allure-example
+    npm install
+    npm test
+    allure generate allure-results --clean -o allure-report
+    allure open allure-report
+  displayName: 'Run Sample Allure Application'
